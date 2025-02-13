@@ -20,4 +20,4 @@ spec:
             - containerPort: 80
           env:
             - name: BW_DOMAIN
-              value: "http://localhost"  # Ajuste para seu domínio
+              value: "http://localhost"

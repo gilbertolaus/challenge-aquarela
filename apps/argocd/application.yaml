@@ -4,11 +4,11 @@ metadata:
   name: argocd
   namespace: argocd
 spec:
-  project: default
+  project: devsecops-project  
   source:
     repoURL: https://github.com/gilbertolaus/challenge-aquarela.git
     targetRevision: HEAD
-    path: apps/argocd
+    path: apps/argocd/manifests
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
