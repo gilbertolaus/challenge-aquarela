@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: bitwarden
-          image: bitwarden/self-host:latest
+          image: bitwardenrs/server:latest
           ports:
             - containerPort: 80
           env:
