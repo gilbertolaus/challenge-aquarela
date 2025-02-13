@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/seu-usuario/seu-repo.git
+    repoURL: https://github.com/gilbertolaus/challenge-aquarela.git
     targetRevision: HEAD
     path: apps/bitwarden/manifests
   destination:

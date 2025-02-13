@@ -4,7 +4,7 @@ metadata:
   name: argocd
   namespace: argocd
 spec:
-  project: devsecops-project  
+  project: default 
   source:
     repoURL: https://github.com/gilbertolaus/challenge-aquarela.git
     targetRevision: HEAD
