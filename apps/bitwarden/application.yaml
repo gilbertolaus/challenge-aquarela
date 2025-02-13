@@ -6,9 +6,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/gilbertolaus/challenge-aquarela
+    repoURL: https://github.com/seu-usuario/seu-repo.git
     targetRevision: HEAD
-    path: apps/bitwarden
+    path: apps/bitwarden/manifests
   destination:
     server: https://kubernetes.default.svc
     namespace: bitwarden
@@ -16,6 +16,3 @@ spec:
     automated:
       prune: true
       selfHeal: true
-    syncOptions:
-      - CreateNamespace=true # Cria automaticamente o namespace se ele não existir
-      - ApplyOutOfSyncOnly=true

@@ -1,0 +1,27 @@
+# install localstack
+docker run -d --name localstack -p 4566:4566 -p 4510-4559:4510-4559 localstack/localstack
+
+# verify localstack working
+docker logs localstack
+
+# install k3d
+curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
+
+# create cluster
+k3d cluster create devsecops-cluster \
+  --agents 2 \
+  --port "80:80@loadbalancer" \
+  --k3s-arg "--tls-san=0.0.0.0@server:0"  
+
+# install argoCD
+
+kubectl create namespace argocd
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+# expose ArgoCD 
+
+kubectl port-forward svc/argocd-server -n argocd 8080:443
+
+# get initial credentaisl for argocd
+
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 --decode
