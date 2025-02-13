@@ -7,7 +7,7 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: argocd-server
+      app.kubernetes.io/name: argocd-server
   template:
     metadata:
       labels:
