@@ -8,11 +8,14 @@ spec:
   source:
     repoURL: https://github.com/gilbertolaus/challenge-aquarela
     targetRevision: HEAD
-    path: apps/manifests/bitwarden
+    path: apps/bitwarden/manifests
   destination:
     server: https://kubernetes.default.svc
     namespace: bitwarden
   syncPolicy:
     automated:
       prune: true
-      selfHeal: trues
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true # Cria automaticamente o namespace se ele não existir
+      - ApplyOutOfSyncOnly=true
