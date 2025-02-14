@@ -3,18 +3,85 @@ kind: Deployment
 metadata:
   name: argocd-server
   namespace: argocd
+  labels:
+    app.kubernetes.io/component: server
+    app.kubernetes.io/name: argocd-server
+    app.kubernetes.io/part-of: argocd
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: argocd-server
+      app.kubernetes.io/name: argocd-server
   template:
     metadata:
       labels:
-        app: argocd-server
+        app.kubernetes.io/name: argocd-server
     spec:
       containers:
         - name: argocd-server
-          image: argoproj/argocd:latest
+          image: quay.io/argoproj/argocd:v2.14.2
+          imagePullPolicy: Always
+          args:
+            - /usr/local/bin/argocd-server
           ports:
             - containerPort: 8080
+            - containerPort: 8083
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: auth
+                  name: argocd-redis
+          livenessProbe:
+            httpGet:
+              path: /healthz?full=true
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 30
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          volumeMounts:
+            - mountPath: /app/config/ssh
+              name: ssh-known-hosts
+            - mountPath: /app/config/tls
+              name: tls-certs
+            - mountPath: /app/config/server/tls
+              name: argocd-repo-server-tls
+            - mountPath: /app/config/dex/tls
+              name: argocd-dex-server-tls
+            - mountPath: /home/argocd
+              name: plugins-home
+            - mountPath: /tmp
+              name: tmp
+      volumes:
+        - name: ssh-known-hosts
+          configMap:
+            name: argocd-ssh-known-hosts-cm
+        - name: tls-certs
+          configMap:
+            name: argocd-tls-certs-cm
+        - name: argocd-repo-server-tls
+          secret:
+            secretName: argocd-repo-server-tls
+            optional: true
+        - name: argocd-dex-server-tls
+          secret:
+            secretName: argocd-dex-server-tls
+            optional: true
+        - name: plugins-home
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
+      nodeSelector:
+        kubernetes.io/os: linux
+      serviceAccountName: argocd-server
