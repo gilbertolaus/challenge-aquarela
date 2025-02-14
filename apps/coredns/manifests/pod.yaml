@@ -5,5 +5,5 @@ metadata:
 spec:
   containers:
   - name: dns-test-container
-    image: busybox:1.28
+    image: curlimages/curl:latest
     command: ["sleep", "3600"]
