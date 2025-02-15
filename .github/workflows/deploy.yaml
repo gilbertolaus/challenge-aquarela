@@ -1,0 +1,25 @@
+- name: Deploy ArgoCD and Apps
+  run: |
+
+    curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+    sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+    rm argocd-linux-amd64
+
+    kubectl create namespace argocd || true
+    kubectl create namespace bitwarden || true
+    kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+    kubectl wait --for=condition=available deployment/argocd-server -n argocd --timeout=300s
+
+    ARGOCD_PASSWORD=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
+
+    argocd login localhost:8080 \
+      --username admin \
+      --password $ARGOCD_PASSWORD \
+      --insecure
+
+    argocd repo add https://github.com/gilbertolaus/challenge-aquarela.git
+    kubectl apply -f apps/argocd/application.yaml -n argocd
+    kubectl apply -f apps/bitwarden/application.yaml -n bitwarden
+    argocd app sync argocd
+    argocd app sync bitwarden
