@@ -1,6 +1,11 @@
-# Bucket S3 público
+data "aws_s3_bucket" "existing" {
+  bucket = "meu-bucket-publico-devsecops"
+}
+
 resource "aws_s3_bucket" "public_bucket" {
   bucket = "meu-bucket-publico-devsecops"
+
+  count = length(data.aws_s3_bucket.existing.id) == 0 ? 1 : 0
 }
 
 # ACL para acesso público
