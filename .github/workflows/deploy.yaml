@@ -20,18 +20,22 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
         
-      - name: Check and Run LocalStack
-          run: |
-            if [ "$(docker ps -q -f name=localstack)" ]; then
-              echo "LocalStack is already running."
-            elif [ "$(docker ps -aq -f name=localstack)" ]; then
-              echo "LocalStack container exists but is stopped. Starting..."
-              docker start localstack
-            else
-              echo "LocalStack container not found. Creating and starting..."
-              docker run -d --name localstack -p 4566:4566 -p 4510-4559:4510-4559 localstack/localstack
-            fi
+      - name: Set up Docker
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker.io
 
+      - name: Check and Run LocalStack
+        run: |
+          if [ "$(docker ps -q -f name=localstack)" ]; then
+            echo "LocalStack is already running."
+          elif [ "$(docker ps -aq -f name=localstack)" ]; then
+            echo "LocalStack container exists but is stopped. Starting..."
+            docker start localstack
+          else
+            echo "LocalStack container not found. Creating and starting..."
+            docker run -d --name localstack -p 4566:4566 -p 4510-4559:4510-4559 localstack/localstack
+          fi
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
