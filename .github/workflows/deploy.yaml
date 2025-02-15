@@ -88,7 +88,7 @@ jobs:
           echo "Obtendo senha inicial do ArgoCD"
           ARGOCD_PASSWORD=$(kubectl -n ${ARGOCD_NAMESPACE} get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
 
-          kubectl port-forward svc/argocd-server -n argocd 8080:443
+          kubectl port-forward svc/argocd-server -n argocd 8080:443 &
 
           echo "Realizando login no ArgoCD"
           argocd login ${{ secrets.ARGOCD_SERVER_URL }} \
