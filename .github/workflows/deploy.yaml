@@ -1,25 +1,70 @@
-- name: Deploy ArgoCD and Apps
-  run: |
+name: Deploy Pipeline
 
-    curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
-    sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
-    rm argocd-linux-amd64
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
-    kubectl create namespace argocd || true
-    kubectl create namespace bitwarden || true
-    kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      ARGOCD_CLI_VERSION: "v2.7.7"
+      ARGOCD_NAMESPACE: "argocd"
+      BITWARDEN_NAMESPACE: "bitwarden"
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v3
 
-    kubectl wait --for=condition=available deployment/argocd-server -n argocd --timeout=300s
+      - name: Configurar kubeconfig
+        run: |
+          echo "${{ secrets.KUBECONFIG_CONTENT }}" > $HOME/.kube/config
 
-    ARGOCD_PASSWORD=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
+      - name: Deploy ArgoCD e Aplicações
+        run: |
+          set -e
+          echo "Baixando ArgoCD CLI versão ${ARGOCD_CLI_VERSION}"
+          curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/download/${ARGOCD_CLI_VERSION}/argocd-linux-amd64
+          sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+          rm argocd-linux-amd64
 
-    argocd login localhost:8080 \
-      --username admin \
-      --password $ARGOCD_PASSWORD \
-      --insecure
+          echo "Criando namespaces '${ARGOCD_NAMESPACE}' e '${BITWARDEN_NAMESPACE}'"
+          kubectl create namespace ${ARGOCD_NAMESPACE} || true
+          kubectl create namespace ${BITWARDEN_NAMESPACE} || true
 
-    argocd repo add https://github.com/gilbertolaus/challenge-aquarela.git
-    kubectl apply -f apps/argocd/application.yaml -n argocd
-    kubectl apply -f apps/bitwarden/application.yaml -n bitwarden
-    argocd app sync argocd
-    argocd app sync bitwarden
+          echo "Instalando manifestos do ArgoCD"
+          kubectl apply -n ${ARGOCD_NAMESPACE} -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+          echo "Aguardando disponibilidade do deployment 'argocd-server'"
+          kubectl wait --for=condition=available deployment/argocd-server -n ${ARGOCD_NAMESPACE} --timeout=300s
+
+          echo "Obtendo senha inicial do ArgoCD"
+          ARGOCD_PASSWORD=$(kubectl -n ${ARGOCD_NAMESPACE} get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
+
+          echo "Realizando login no ArgoCD"
+          argocd login ${{ secrets.ARGOCD_SERVER_URL }} \
+            --username admin \
+            --password "$ARGOCD_PASSWORD" \
+            --insecure
+
+          echo "Adicionando repositório ${{
+            secrets.ARGOCD_REPO_URL
+          }} ao ArgoCD"
+          argocd repo add ${{ secrets.ARGOCD_REPO_URL }}
+
+          echo "Aplicando manifestos da aplicação ArgoCD"
+          kubectl apply -f apps/argocd/application.yaml -n ${ARGOCD_NAMESPACE}
+
+          echo "Aplicando manifestos da aplicação Bitwarden"
+          kubectl apply -f apps/bitwarden/application.yaml -n ${BITWARDEN_NAMESPACE}
+
+          echo "Sincronizando aplicação 'argocd'"
+          argocd app sync argocd
+
+          echo "Sincronizando aplicação 'bitwarden'"
+          argocd app sync bitwarden
+        env:
+          ARGOCD_CLI_VERSION: ${{ env.ARGOCD_CLI_VERSION }}
+          ARGOCD_NAMESPACE: ${{ env.ARGOCD_NAMESPACE }}
+          BITWARDEN_NAMESPACE: ${{ env.BITWARDEN_NAMESPACE }}
