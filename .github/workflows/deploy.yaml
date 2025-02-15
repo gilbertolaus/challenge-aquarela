@@ -20,9 +20,14 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
         
-      - name: LocalStack
-        run: |
-          docker run -d --name localstack -p 4566:4566 -p 4510-4559:4510-4559 localstack/localstack
+            - name: Check and Run LocalStack
+              run: |
+                if [ "$(docker ps -q -f name=localstack)" ]; then
+                  echo "LocalStack is already running."
+                else
+                  echo "Starting LocalStack..."
+                  docker run -d --name localstack -p 4566:4566 -p 4510-4559:4510-4559 localstack/localstack
+                fi
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
@@ -60,6 +65,8 @@ jobs:
 
           echo "Obtendo senha inicial do ArgoCD"
           ARGOCD_PASSWORD=$(kubectl -n ${ARGOCD_NAMESPACE} get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
+
+          kubectl port-forward svc/argocd-server -n argocd 8080:443
 
           echo "Realizando login no ArgoCD"
           argocd login ${{ secrets.ARGOCD_SERVER_URL }} \
