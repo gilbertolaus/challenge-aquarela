@@ -35,6 +35,11 @@ jobs:
           terraform init
           terraform apply -auto-approve
 
+      - name: Setup k3d Cluster
+        run: |
+          curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
+          k3d cluster create devsecops-cluster --agents 2 --port "80:80@loadbalancer"
+                                                                                     
       - name: Deploy ArgoCD and Apps
         run: |
           set -e
