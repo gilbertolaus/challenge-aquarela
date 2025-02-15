@@ -35,7 +35,7 @@ jobs:
           terraform init
           terraform apply -auto-approve
 
-      - name: Deploy ArgoCD e Aplicações
+      - name: Deploy ArgoCD and Apps
         run: |
           set -e
           echo "Baixando ArgoCD CLI versão ${ARGOCD_CLI_VERSION}"
