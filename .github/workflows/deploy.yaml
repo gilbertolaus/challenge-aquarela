@@ -60,8 +60,13 @@ jobs:
       - name: Setup k3d Cluster
         run: |
           curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
-          k3d cluster create devsecops-cluster --agents 2 --port "80:80@loadbalancer"
-                                                                                     
+
+          if k3d cluster list | grep -q "devsecops-cluster"; then
+            echo "Cluster 'devsecops-cluster' já existe."
+          else
+            echo "Criando cluster 'devsecops-cluster'..."
+            k3d cluster create devsecops-cluster --agents 2 --port "80:80@loadbalancer"
+          fi
       - name: Deploy ArgoCD and Apps
         run: |
           set -e
