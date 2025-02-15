@@ -17,6 +17,24 @@ jobs:
       - name: Checkout do repositório
         uses: actions/checkout@v3
 
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        
+      - name: LocalStack
+        run: |
+          docker run -d --name localstack -p 4566:4566 -p 4510-4559:4510-4559 localstack/localstack
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.5
+
+      - name: Deploy with Terraform
+        run: |
+          cd terraform
+          terraform init
+          terraform apply -auto-approve
+
       - name: Deploy ArgoCD e Aplicações
         run: |
           set -e
