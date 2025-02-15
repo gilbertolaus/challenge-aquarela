@@ -17,10 +17,6 @@ jobs:
       - name: Checkout do repositório
         uses: actions/checkout@v3
 
-      - name: Configurar kubeconfig
-        run: |
-          echo "${{ secrets.KUBECONFIG_CONTENT }}" > $HOME/.kube/config
-
       - name: Deploy ArgoCD e Aplicações
         run: |
           set -e
