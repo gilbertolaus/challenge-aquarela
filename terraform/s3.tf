@@ -1,11 +1,11 @@
 data "aws_s3_bucket" "existing_bucket" {
   count  = 1
-  bucket = "meu-bucket-publico-devsecops"
+  bucket = "bucket-public-devsecops"
 }
 
 resource "aws_s3_bucket" "public_bucket" {
   count  = data.aws_s3_bucket.existing_bucket[0].id != null ? 0 : 1
-  bucket = "meu-bucket-publico-devsecops"
+  bucket = "bucket-public-devsecops"
 }
 
 resource "aws_s3_bucket_acl" "public_bucket_acl" {
