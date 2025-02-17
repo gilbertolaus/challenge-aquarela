@@ -4,6 +4,11 @@ Este repositório contém o código e a configuração para o projeto Challenge 
 
 ## Como utilizar
 
+### Logar no GITHUB com as seguinte credenciais
+
+user: challengeaquarela
+pass: challenge25@
+
 ### Acessar o Workflow do GITHUB Actions
 Acessar o endereço https://github.com/gilbertolaus/challenge-aquarela/actions/workflows/deploy.yaml
 
