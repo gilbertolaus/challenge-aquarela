@@ -138,34 +138,34 @@ jobs:
           echo "Synchronizing application 'bitwarden'"
           argocd app sync bitwarden
 
-      - name: Testar Deploy dos Serviços do Terraform
+      - name: Test Deploy Terraform
         run: |
           cd terraform
           terraform init
           terraform apply -auto-approve
 
-      - name: Obter Informações do Cluster Kubernetes
+      - name: Get Info Cluster Kubernetes
         run: |
           
           kubectl cluster-info
 
-      - name: Testar Funcionamento do ArgoCD
+      - name: Test ArgoCD
         run: |
           
           argocd app list
 
-      - name: Testar Funcionamento do Bitwarden
+      - name: Test Bitwarden
         run: |
           curl -I http://localhost:8081
           curl http://localhost:8081
 
-      - name: Testar CoreDNS
+      - name: Test CoreDNS
         run: |  
                   kubectl run dns-test --image=alpine --restart=Never -- sh -c "apk add --no-cache bind-tools && nslookup example.com; exit 0"| sleep 60 && \
                   kubectl logs dns-test && \
                   kubectl delete pod dns-test
 
-      - name: Testar LocalPathProvider
+      - name: Test LocalPathProvider
         run: |
           # Comando para testar o LocalPathProvider
           kubectl get sc
