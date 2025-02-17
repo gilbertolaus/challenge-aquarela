@@ -83,6 +83,8 @@ Clicar no botão Run workflow.
   Implementar políticas de IAM com condições baseadas em tags e princípio do menor privilégio.
 - **Gestão de Secrets**  
   Migrar para [AWS Secrets Manager](https://aws.amazon.com/secrets-manager/) ou [HashiCorp Vault](https://www.vaultproject.io/), eliminando credenciais em texto claro.
+- **Backend para o TFSTATE**
+  Implementar a configuração do backend do Terraform para o S3. 
 
 ---
 
