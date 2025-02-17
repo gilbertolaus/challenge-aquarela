@@ -117,7 +117,7 @@ jobs:
           echo "Retrieving initial ArgoCD password"
           ARGOCD_PASSWORD=$(kubectl -n ${ARGOCD_NAMESPACE} get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
           echo "Logging into ArgoCD"
-          
+          sleep 60
           argocd login ${{ vars.ARGOCD_SERVER_URL }} \
             --username admin \
             --password "$ARGOCD_PASSWORD" \
