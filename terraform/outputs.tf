@@ -17,5 +17,5 @@ output "vpc_id" {
 }
 
 output "ec2_public_ip" {
-  value = try(aws_instance.example[0].public_ip, null)
+  value = try(aws_instance.example.public_ip, null)
 }
