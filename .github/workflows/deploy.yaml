@@ -6,15 +6,6 @@ on:
   pull_request:
     branches: [ main ]
 
-# Definição de variáveis de ambiente e vars necessárias
-env:
-  ARGOCD_CLI_VERSION: "v2.7.7"
-  ARGOCD_NAMESPACE: "argocd"
-  BITWARDEN_NAMESPACE: "bitwarden"
-  ARGOCD_REPO_URL: ${{ vars.ARGOCD_REPO_URL }}
-  ARGOCD_REPO_USERNAME: ${{ vars.ARGOCD_REPO_USERNAME }}
-  ARGOCD_REPO_PASSWORD: ${{ vars.ARGOCD_REPO_PASSWORD }}
-
 jobs:
   deploy:
     runs-on: self-hosted
@@ -76,12 +67,7 @@ jobs:
             echo "Creating cluster 'devsecops-cluster'..."
             k3d cluster create devsecops-cluster --agents 2 --port "80:80@loadbalancer" --port "443:443@loadbalancer" --port "8080:8080@loadbalancer" "8081:8081@loadbalancer"
           fi
-
       - name: Deploy ArgoCD and Apps
-        env:
-          ARGOCD_REPO_URL: ${{ vars.ARGOCD_REPO_URL }}
-          ARGOCD_REPO_USERNAME: ${{ vars.ARGOCD_REPO_USERNAME }}
-          ARGOCD_REPO_PASSWORD: ${{ vars.ARGOCD_REPO_PASSWORD }}
         run: |
           set -e
           echo "Downloading ArgoCD CLI version ${ARGOCD_CLI_VERSION}"
@@ -125,7 +111,6 @@ jobs:
 
           echo "Synchronizing application 'bitwarden'"
           argocd app sync bitwarden
-          
         env:
           ARGOCD_CLI_VERSION: ${{ env.ARGOCD_CLI_VERSION }}
           ARGOCD_NAMESPACE: ${{ env.ARGOCD_NAMESPACE }}
