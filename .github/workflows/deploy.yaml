@@ -6,13 +6,20 @@ on:
   pull_request:
     branches: [ main ]
 
+# Definição de variáveis de ambiente e vars necessárias
+env:
+  ARGOCD_CLI_VERSION: "v2.7.7"
+  ARGOCD_NAMESPACE: "argocd"
+  BITWARDEN_NAMESPACE: "bitwarden"
+  ARGOCD_REPO_URL: ${{ vars.ARGOCD_REPO_URL }}
+  ARGOCD_REPO_USERNAME: ${{ vars.ARGOCD_REPO_USERNAME }}
+  ARGOCD_REPO_PASSWORD: ${{ vars.ARGOCD_REPO_PASSWORD }}
+
 jobs:
   deploy:
     runs-on: self-hosted
-    env:
-      ARGOCD_CLI_VERSION: "v2.7.7"
-      ARGOCD_NAMESPACE: "argocd"
-      BITWARDEN_NAMESPACE: "bitwarden"
+    environment: production  # Ambiente onde as vars estão configuradas
+    
     steps:
       - name: Repository Checkout
         uses: actions/checkout@v3
@@ -67,7 +74,12 @@ jobs:
             echo "Creating cluster 'devsecops-cluster'..."
             k3d cluster create devsecops-cluster --agents 2 --port "80:80@loadbalancer" --port "443:443@loadbalancer" --port "8080:8080@loadbalancer" "8081:8081@loadbalancer"
           fi
+
       - name: Deploy ArgoCD and Apps
+        env:
+          ARGOCD_REPO_URL: ${{ vars.ARGOCD_REPO_URL }}
+          ARGOCD_REPO_USERNAME: ${{ vars.ARGOCD_REPO_USERNAME }}
+          ARGOCD_REPO_PASSWORD: ${{ vars.ARGOCD_REPO_PASSWORD }}
         run: |
           set -e
           echo "Downloading ArgoCD CLI version ${ARGOCD_CLI_VERSION}"
@@ -88,20 +100,17 @@ jobs:
           kubectl apply -f apps/argocd/manifests/service.yaml
           kubectl apply -f apps/argocd/manifests/loadbalancer.yaml
 
-          ARGOCD_CLUSTER_IP=$(kubectl get svc argocd-server -n argocd -o jsonpath='{.spec.clusterIP}')
-          echo "The ArgoCD Cluster IP is: $ARGOCD_CLUSTER_IP"
-
           echo "Retrieving initial ArgoCD password"
           ARGOCD_PASSWORD=$(kubectl -n ${ARGOCD_NAMESPACE} get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
           echo "Logging into ArgoCD"
           
-          argocd login localhost:8080 \
+          argocd login ${{ vars.ARGOCD_SERVER_URL }}:8080 \
             --username admin \
             --password "$ARGOCD_PASSWORD" \
             --insecure
 
-          echo "Adding repository ${{ secrets.ARGOCD_REPO_URL }} to ArgoCD"
-          argocd repo add ${{ secrets.ARGOCD_REPO_URL }}
+          echo "Adding repository ${{ vars.ARGOCD_REPO_URL }} to ArgoCD"
+          argocd repo add ${{ vars.ARGOCD_REPO_URL }}
 
           echo "Applying ArgoCD application manifests"
           kubectl apply -f apps/argocd/application.yaml -n ${ARGOCD_NAMESPACE}
