@@ -6,12 +6,16 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "1"  
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   selector:
     app.kubernetes.io/name: argocd-server
   ports:
     - name: http
       port: 80
-      targetPort: 8080 
+      targetPort: 80
+      protocol: TCP
+
+    - name: https
       port: 443
-      targetPort: 8080 
+      targetPort: 8080
+      protocol: TCP

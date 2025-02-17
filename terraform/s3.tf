@@ -1,17 +1,22 @@
-# Bucket S3 público
-resource "aws_s3_bucket" "public_bucket" {
+data "aws_s3_bucket" "existing_bucket" {
+  count  = 1
   bucket = "meu-bucket-publico-devsecops"
 }
 
-# ACL para acesso público
+resource "aws_s3_bucket" "public_bucket" {
+  count  = data.aws_s3_bucket.existing_bucket[0].id != null ? 0 : 1
+  bucket = "meu-bucket-publico-devsecops"
+}
+
 resource "aws_s3_bucket_acl" "public_bucket_acl" {
-  bucket = aws_s3_bucket.public_bucket.id
+  count  = data.aws_s3_bucket.existing_bucket[0].id != null ? 0 : 1
+  bucket = data.aws_s3_bucket.existing_bucket[0].id != null ? data.aws_s3_bucket.existing_bucket[0].id : aws_s3_bucket.public_bucket[0].id
   acl    = "public-read"
 }
 
-# Política de bucket para permitir acesso público (opcional)
 resource "aws_s3_bucket_policy" "public_access" {
-  bucket = aws_s3_bucket.public_bucket.id
+  count  = data.aws_s3_bucket.existing_bucket[0].id != null ? 0 : 1
+  bucket = data.aws_s3_bucket.existing_bucket[0].id != null ? data.aws_s3_bucket.existing_bucket[0].id : aws_s3_bucket.public_bucket[0].id
   policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
@@ -19,7 +24,7 @@ resource "aws_s3_bucket_policy" "public_access" {
         Effect    = "Allow",
         Principal = "*",
         Action    = "s3:GetObject",
-        Resource  = "${aws_s3_bucket.public_bucket.arn}/*"
+        Resource  = "${data.aws_s3_bucket.existing_bucket[0].id != null ? data.aws_s3_bucket.existing_bucket[0].arn : aws_s3_bucket.public_bucket[0].arn}/*"
       }
     ]
   })

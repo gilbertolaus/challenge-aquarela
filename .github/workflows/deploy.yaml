@@ -14,7 +14,7 @@ jobs:
       ARGOCD_NAMESPACE: "argocd"
       BITWARDEN_NAMESPACE: "bitwarden"
     steps:
-      - name: Checkout do repositório
+      - name: Repository Checkout
         uses: actions/checkout@v3
 
       - name: Checkout Code
@@ -62,57 +62,58 @@ jobs:
           curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
 
           if k3d cluster list | grep -q "devsecops-cluster"; then
-            echo "Cluster 'devsecops-cluster' já existe."
+            echo "Cluster 'devsecops-cluster' already exists."
           else
-            echo "Criando cluster 'devsecops-cluster'..."
-            k3d cluster create devsecops-cluster --agents 2 --port "80:80@loadbalancer"
+            echo "Creating cluster 'devsecops-cluster'..."
+            k3d cluster create devsecops-cluster --agents 2 --port "80:80@loadbalancer" --port "443:443@loadbalancer" --port "8080:8080@loadbalancer" "8081:8081@loadbalancer"
           fi
       - name: Deploy ArgoCD and Apps
         run: |
           set -e
-          echo "Baixando ArgoCD CLI versão ${ARGOCD_CLI_VERSION}"
+          echo "Downloading ArgoCD CLI version ${ARGOCD_CLI_VERSION}"
           curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/download/${ARGOCD_CLI_VERSION}/argocd-linux-amd64
           sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
           rm argocd-linux-amd64
 
-          echo "Criando namespaces '${ARGOCD_NAMESPACE}' e '${BITWARDEN_NAMESPACE}'"
+          echo "Creating namespaces '${ARGOCD_NAMESPACE}' and '${BITWARDEN_NAMESPACE}'"
           kubectl create namespace ${ARGOCD_NAMESPACE} || true
           kubectl create namespace ${BITWARDEN_NAMESPACE} || true
 
-          echo "Instalando manifestos do ArgoCD"
+          echo "Installing ArgoCD manifests"
           kubectl apply -n ${ARGOCD_NAMESPACE} -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
-          echo "Aguardando disponibilidade do deployment 'argocd-server'"
+          echo "Waiting for deployment 'argocd-server' to be available"
           kubectl wait --for=condition=available deployment/argocd-server -n ${ARGOCD_NAMESPACE} --timeout=300s
 
-          echo "Obtendo senha inicial do ArgoCD"
+          kubectl apply -f apps/argocd/manifests/service.yaml
+
+          ARGOCD_CLUSTER_IP=$(kubectl get svc argocd-server -n argocd -o jsonpath='{.spec.clusterIP}')
+          echo "The ArgoCD Cluster IP is: $ARGOCD_CLUSTER_IP"
+
+          echo "Retrieving initial ArgoCD password"
           ARGOCD_PASSWORD=$(kubectl -n ${ARGOCD_NAMESPACE} get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
-
-          kubectl port-forward svc/argocd-server -n argocd 8080:443 &
-
-          echo "essa é variavel {{ secrets.ARGOCD_SERVER_URL }} "        
-          echo "Realizando login no ArgoCD"
+          echo "Logging into ArgoCD"
           
-          argocd login ${{ secrets.ARGOCD_SERVER_URL }} \
+          argocd login $ARGOCD_CLUSTER_IP:8080 \
             --username admin \
             --password "$ARGOCD_PASSWORD" \
             --insecure
 
-          echo "Adicionando repositório ${{
+          echo "Adding repository ${{
             secrets.ARGOCD_REPO_URL
-          }} ao ArgoCD"
+          }} to ArgoCD"
           argocd repo add ${{ secrets.ARGOCD_REPO_URL }}
 
-          echo "Aplicando manifestos da aplicação ArgoCD"
+          echo "Applying ArgoCD application manifests"
           kubectl apply -f apps/argocd/application.yaml -n ${ARGOCD_NAMESPACE}
 
-          echo "Aplicando manifestos da aplicação Bitwarden"
+          echo "Applying Bitwarden application manifests"
           kubectl apply -f apps/bitwarden/application.yaml -n ${BITWARDEN_NAMESPACE}
 
-          echo "Sincronizando aplicação 'argocd'"
+          echo "Synchronizing application 'argocd'"
           argocd app sync argocd
 
-          echo "Sincronizando aplicação 'bitwarden'"
+          echo "Synchronizing application 'bitwarden'"
           argocd app sync bitwarden
         env:
           ARGOCD_CLI_VERSION: ${{ env.ARGOCD_CLI_VERSION }}
