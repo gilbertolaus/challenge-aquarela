@@ -112,8 +112,6 @@ jobs:
       ARGOCD_NAMESPACE: "argocd"
       BITWARDEN_NAMESPACE: "bitwarden"
     steps:
-      - name: Repository Checkout
-        uses: actions/checkout@v3
 
       - name: Deploy Applications
         run: |
