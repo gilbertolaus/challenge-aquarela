@@ -71,7 +71,7 @@ jobs:
       - name: Deploy with Terraform
         if: ${{ !inputs.skip_terraform }}
         run: |
-          cd /home/runner/work/challenge-aquarela/terraform
+          cd terraform
           pwd
           terraform init
           terraform apply -auto-approve
