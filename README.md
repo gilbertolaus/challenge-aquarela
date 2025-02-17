@@ -32,6 +32,8 @@ Este repositório contém o código e a configuração para o projeto Challenge 
 - **Uso**: Utilizado para automatizar o processo de implantação e testes do projeto.
 - **Documentação**: [GitHub Actions Documentation](https://docs.github.com/en/actions)
 
-## Estrutura do Repositório
-
-/home/sysadmin/REPO/challenge-aquarela │ ├── .github │ └── workflows │ └── deploy.yaml # Workflow de CI/CD para implantação │ ├── apps │ ├── argocd │ │ └── manifests │ │ ├── loadbalancer.yaml # Configuração do LoadBalancer para ArgoCD │ │ └── service.yaml # Configuração do Service para ArgoCD │ │ │ └── bitwarden │ └── manifests │ ├── loadbalancer.yaml # Configuração do LoadBalancer para Bitwarden │ └── service.yaml # Configuração do Service para Bitwarden │ ├── terraform │ ├── ec2.tf # Configuração de instâncias EC2 │ ├── s3.tf # Configuração de buckets S3 │ └── dynamodb.tf # Configuração de tabelas DynamoDB │ ├── commands_terminal.txt # Comandos úteis para execução local └── README.md # Documentação principal do projeto
+### Explicação dos Componentes:
+- **`.github/workflows`**: Configurações de automação do GitHub Actions.
+- **`apps`**: Configurações de aplicativos Kubernetes (ArgoCD e Bitwarden).
+- **`terraform`**: Infraestrutura como código para recursos AWS.
+- **`commands_terminal.txt`**: Lista de comandos úteis para operações locais.
