@@ -1,18 +1,22 @@
-data "aws_s3_bucket" "existing_bucket" {
+resource "aws_s3_bucket" "public_bucket" {
   bucket = "bucket-public-devsecops"
 }
 
-resource "aws_s3_bucket" "public_bucket" {
-  count  = data.aws_s3_bucket.existing_bucket.id == null ? 1 : 0
-  bucket = "bucket-public-devsecops"
+resource "aws_s3_bucket_ownership_controls" "public_bucket" {
+  bucket = aws_s3_bucket.public_bucket.id
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
 }
 
 resource "aws_s3_bucket_acl" "public_bucket_acl" {
+  depends_on = [aws_s3_bucket_ownership_controls.public_bucket]
   bucket = aws_s3_bucket.public_bucket.id
   acl    = "public-read"
 }
 
 resource "aws_s3_bucket_policy" "public_access" {
+  depends_on = [aws_s3_bucket_acl.public_bucket_acl]
   bucket = aws_s3_bucket.public_bucket.id
   policy = jsonencode({
     Version = "2012-10-17",

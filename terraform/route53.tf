@@ -1,6 +1,10 @@
 # Zona hospedada no Route53
 resource "aws_route53_zone" "devsecops_zone" {
   name = "devsecops.local"
+  
+  vpc {
+    vpc_id = aws_vpc.main.id
+  }
 
   tags = {
     Environment = "dev"
@@ -13,5 +17,5 @@ resource "aws_route53_record" "example" {
   name    = "app.devsecops.local"
   type    = "A"
   ttl     = "300"
-  records = [aws_instance.example.private_ip]  # Usar IP privado da EC2
+  records = [aws_instance.example.public_ip]  
 }
