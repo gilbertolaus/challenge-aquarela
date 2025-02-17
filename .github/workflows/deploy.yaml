@@ -1,10 +1,22 @@
 name: Deploy Pipeline
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment deploy'
+        type: choice
+        required: true
+        default: 'development'
+        options:
+          - development
+          - staging
+          - production
+      skip_terraform:
+        description: 'Skip Terraform?'
+        type: boolean
+        required: true
+        default: false
 
 jobs:
   deploy:
