@@ -102,7 +102,7 @@ jobs:
             --insecure
 
           echo "Adding repository ${{ vars.ARGOCD_REPO_URL }} to ArgoCD"
-          argocd repo add ${{ vars.ARGOCD_REPO_URL }}
+          argocd repo add ${{ vars.ARGOCD_REPO_URL }} || true
 
           echo "Applying ArgoCD application manifests"
           kubectl apply -f apps/argocd/application.yaml -n ${ARGOCD_NAMESPACE}
