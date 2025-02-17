@@ -130,10 +130,10 @@ jobs:
           argocd repo add ${{ vars.ARGOCD_REPO_URL }} || true
 
           echo "Applying ArgoCD application manifests"
-          kubectl apply -f apps/argocd/application.yaml -n ${ARGOCD_NAMESPACE}
+          kubectl apply -f apps/argocd/application.yaml -n argocd
 
           echo "Applying Bitwarden application manifests"
-          kubectl apply -f apps/bitwarden/application.yaml -n ${BITWARDEN_NAMESPACE}
+          kubectl apply -f apps/bitwarden/application.yaml -n argocd
 
           echo "Synchronizing application 'argocd'"
           argocd app sync argocd
