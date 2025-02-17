@@ -165,12 +165,10 @@ jobs:
           curl http://localhost:8081
 
       - name: Testar CoreDNS
-        run: |
-       
-             
-            kubectl run dns-test --image=alpine --restart=Never -- sh -c "nslookup example.com; exit 0"
-            kubectl logs dns-test
-            kubectl delete pod dns-test
+        run: |  
+                  kubectl run dns-test --image=alpine --restart=Never -- sh -c "apk add --no-cache bind-tools && nslookup example.com; exit 0" && \
+                  kubectl logs dns-test && \
+                  kubectl delete pod dns-test
 
       - name: Testar LocalPathProvider
         run: |
