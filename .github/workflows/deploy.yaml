@@ -10,11 +10,6 @@ on:
         default: 'development'
         options:
           - development
-      skip_terraform:
-        description: 'Skip Terraform?'
-        type: boolean
-        required: true
-        default: false
 
 jobs:
   deploy:
