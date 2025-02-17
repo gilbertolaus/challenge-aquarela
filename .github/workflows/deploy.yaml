@@ -65,7 +65,11 @@ jobs:
             echo "Cluster 'devsecops-cluster' already exists."
           else
             echo "Creating cluster 'devsecops-cluster'..."
-            k3d cluster create devsecops-cluster --agents 2 --port "80:80@loadbalancer" --port "443:443@loadbalancer" --port "8080:8080@loadbalancer" "8081:8081@loadbalancer"
+            k3d cluster create devsecops-cluster --agents 2 \
+              --port "80:80@loadbalancer" \
+              --port "443:443@loadbalancer" \
+              --port "8080:8080@loadbalancer" \
+              --port "8081:8081@loadbalancer"
           fi
       - name: Deploy ArgoCD and Apps
         run: |
