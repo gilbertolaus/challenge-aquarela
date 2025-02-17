@@ -132,11 +132,11 @@ jobs:
           echo "Applying Bitwarden application manifests"
           kubectl apply -f apps/bitwarden/application.yaml -n argocd
 
-          echo "Synchronizing application 'argocd'"
-          argocd app sync argocd
+          #echo "Synchronizing application 'argocd'"
+          #argocd app sync argocd
 
-          echo "Synchronizing application 'bitwarden'"
-          argocd app sync bitwarden
+          #echo "Synchronizing application 'bitwarden'"
+          #argocd app sync bitwarden
 
       - name: Test Deploy Terraform
         run: |
