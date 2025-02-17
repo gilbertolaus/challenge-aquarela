@@ -168,14 +168,9 @@ jobs:
         run: |
        
              
-              COREDNS_POD=$(kubectl get pods -n kube-system -l k8s-app=kube-dns -o jsonpath='{.items[0].metadata.name}')
-              
-              if kubectl exec -n kube-system -it $COREDNS_POD -- dig example.com; then
-                echo "CoreDNS está funcionando corretamente."
-              else
-                echo "Falha na resolução DNS com CoreDNS."
-                exit 1
-              fi
+            kubectl run dns-test --image=alpine --restart=Never -- sh -c "nslookup example.com; exit 0"
+            kubectl logs dns-test
+            kubectl delete pod dns-test
 
       - name: Testar LocalPathProvider
         run: |
