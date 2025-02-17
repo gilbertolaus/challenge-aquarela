@@ -10,8 +10,6 @@ on:
         default: 'development'
         options:
           - development
-          - staging
-          - production
       skip_terraform:
         description: 'Skip Terraform?'
         type: boolean
