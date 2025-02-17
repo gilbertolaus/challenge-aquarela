@@ -95,14 +95,12 @@ jobs:
           ARGOCD_PASSWORD=$(kubectl -n ${ARGOCD_NAMESPACE} get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
           echo "Logging into ArgoCD"
           
-          argocd login https://localhost:8080 \
+          argocd login localhost:8080 \
             --username admin \
             --password "$ARGOCD_PASSWORD" \
             --insecure
 
-          echo "Adding repository ${{
-            secrets.ARGOCD_REPO_URL
-          }} to ArgoCD"
+          echo "Adding repository ${{ secrets.ARGOCD_REPO_URL }} to ArgoCD"
           argocd repo add ${{ secrets.ARGOCD_REPO_URL }}
 
           echo "Applying ArgoCD application manifests"
