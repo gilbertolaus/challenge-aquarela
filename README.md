@@ -64,4 +64,3 @@ Este repositório contém o código e a configuração para o projeto Challenge 
 - **Auto-Scaling do k3d**  
   Implementar escalonamento automático de nodes com [`k3d autoscale`](https://k3d.io/v5.5.1/usage/commands/#cluster-create).
 
----
