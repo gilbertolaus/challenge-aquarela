@@ -112,14 +112,6 @@ jobs:
           kubectl apply -f apps/argocd/manifests/service.yaml
           kubectl apply -f apps/argocd/manifests/loadbalancer.yaml
 
-  deploy-apps:
-    needs: deploy
-    runs-on: ubuntu-latest
-    env:
-      ARGOCD_NAMESPACE: "argocd"
-      BITWARDEN_NAMESPACE: "bitwarden"
-    steps:
-
       - name: Deploy Applications
         run: |
           echo "Retrieving initial ArgoCD password"
@@ -146,10 +138,6 @@ jobs:
           echo "Synchronizing application 'bitwarden'"
           argocd app sync bitwarden
 
-  re-test:
-    runs-on: ubuntu-latest
-    needs: deploy-apps
-    steps:
       - name: Testar Deploy dos Serviços do Terraform
         run: |
           cd terraform
