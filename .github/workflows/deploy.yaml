@@ -31,12 +31,7 @@ jobs:
       uses: actions/checkout@v3
 
       - name: Change working directory
-        run: cd /home/ && pwd
-
-      - name: Clone REPO
-        run: | 
-          git clone ${{ vars.ARGOCD_REPO_URL }} 
-          cd challenge-aquarela 
+        run: cd /home/runner/work/challenge-aquarela && pwd
 
       - name: Set up Docker
         run: |
@@ -70,7 +65,7 @@ jobs:
       - name: Deploy with Terraform
         if: ${{ !inputs.skip_terraform }}
         run: |
-          cd /home/challenge-aquarela/terraform
+          cd terraform
           terraform init
           terraform apply -auto-approve
 
