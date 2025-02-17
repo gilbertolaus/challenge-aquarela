@@ -15,9 +15,30 @@ spec:
     spec:
       containers:
         - name: bitwarden
-          image: bitwardenrs/server:latest
-          ports:
-            - containerPort: 80
+          image: vaultwarden/server:1.24.0
+          command: ["/start.sh"]
           env:
-            - name: BW_DOMAIN
-              value: "http://localhost"
+            - name: ROCKET_ADDRESS
+              value: "0.0.0.0"
+            - name: ROCKET_PORT
+              value: "8081"
+            - name: ROCKET_WORKERS
+              value: "10"
+            - name: WEBSOCKET_ENABLED
+              value: "true"
+            - name: SIGNUPS_ALLOWED
+              value: "true"
+            - name: DOMAIN
+              value: "http://localhost:8081"
+            - name: ADMIN_TOKEN
+              value: "your-admin-token"
+          ports:
+            - containerPort: 8081
+              name: http
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
