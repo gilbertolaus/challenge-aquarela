@@ -43,8 +43,6 @@ Este repositório contém o código e a configuração para o projeto Challenge 
 ### **1. Segurança Avançada**
 - **IAM Granular**  
   Implementar políticas de IAM com condições baseadas em tags e princípio do menor privilégio.
-- **Scans Automatizados**  
-  Integrar [Trivy](https://trivy.dev/) no pipeline para análise de vulnerabilidades em imagens Docker e código.
 - **Gestão de Secrets**  
   Migrar para [AWS Secrets Manager](https://aws.amazon.com/secrets-manager/) ou [HashiCorp Vault](https://www.vaultproject.io/), eliminando credenciais em texto claro.
 
@@ -63,31 +61,7 @@ Este repositório contém o código e a configuração para o projeto Challenge 
 ### **3. Otimização de Custos e Performance**
 - **Cleanup Automático**  
   Agendar jobs diários para remover recursos não produtivos no LocalStack (ex: buckets S3 temporários).
-- **Cache de Módulos Terraform**  
-  Usar [Terraform Cloud](https://www.terraform.io/cloud) para acelerar `terraform init`.
 - **Auto-Scaling do k3d**  
   Implementar escalonamento automático de nodes com [`k3d autoscale`](https://k3d.io/v5.5.1/usage/commands/#cluster-create).
 
 ---
-
-### **4. Expansão Multi-Região**
-- **Deploy Híbrido**  
-  Gerenciar múltiplas regiões AWS/GCP usando [Terraform Workspaces](https://developer.hashicorp.com/terraform/language/state/workspaces).
-- **Failover com Route53**  
-  Configurar [health checks](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/dns-failover.html) para redirecionamento entre clusters.
-
----
-
-### **5. Documentação como Código**
-- **Testes End-to-End**  
-  Validar fluxos completos com [Testcontainers](https://testcontainers.com/).
----
-
-### 📊 Impacto nas Métricas de Avaliação
-| Melhoria                   | Critério Impactado                          | Ferramentas/Alinhamento                  |
-|----------------------------|---------------------------------------------|-------------------------------------------|
-| **IAM Granular**           | Aderência a Boas Práticas (DevSecOps)       | AWS IAM, Terraform `condition`           |
-| **Pipeline Multi-Estágio** | Escolha/Design da Solução                   | GitHub Actions, ArgoCD Rollouts          |
-| **Cache de Módulos**       | Eficiência de Automação                     | Terraform Cloud, GitHub Cache            |
-| **Expansão Multi-Região**  | Funcionamento em Cenários Complexos         | Terraform Workspaces, AWS Global Accelerator |
-| **Testes End-to-End**      | Qualidade da Documentação                   | Testcontainers, k6                       |
