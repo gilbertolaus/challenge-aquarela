@@ -66,14 +66,6 @@ jobs:
         if: ${{ !inputs.skip_terraform }}
         run: |
           cd terraform
-              
-              if AWS_ENDPOINT_URL=http://localhost:4566 aws dynamodb describe-table --table-name devsecops-table; then
-                terraform import aws_dynamodb_table.devsecops_table devsecops-table
-              fi
-
-              if AWS_ENDPOINT_URL=http://localhost:4566 aws s3api head-bucket --bucket bucket-public-devsecops; then
-                terraform import aws_s3_bucket.public_bucket bucket-public-devsecops
-              fi
           terraform init
           terraform apply -auto-approve
 
@@ -154,14 +146,7 @@ jobs:
       - name: Testar Deploy dos Serviços do Terraform
         run: |
           cd terraform
-             
-              if AWS_ENDPOINT_URL=http://localhost:4566 aws dynamodb describe-table --table-name devsecops-table; then
-                terraform import aws_dynamodb_table.devsecops_table devsecops-table
-              fi
-
-              if AWS_ENDPOINT_URL=http://localhost:4566 aws s3api head-bucket --bucket bucket-public-devsecops; then
-                terraform import aws_s3_bucket.public_bucket bucket-public-devsecops
-              fi
+          terraform init
           terraform apply -auto-approve
 
       - name: Obter Informações do Cluster Kubernetes
