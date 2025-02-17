@@ -141,6 +141,7 @@ jobs:
 
   re-test:
     runs-on: self-hosted
+    needs: deploy-apps
     steps:
       - name: Testar Deploy dos Serviços do Terraform
         run: |
