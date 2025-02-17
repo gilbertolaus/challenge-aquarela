@@ -1,15 +1,9 @@
 output "s3_bucket_endpoint" {
-  value = try(
-    data.aws_s3_bucket.existing_bucket[0].bucket_domain_name,
-    try(aws_s3_bucket.public_bucket[0].bucket_domain_name, null)
-  )
+  value = aws_s3_bucket.public_bucket.bucket_domain_name
 }
 
 output "dynamodb_table_name" {
-  value = try(
-    data.aws_dynamodb_table.existing_table[0].name,
-    try(aws_dynamodb_table.devsecops_table[0].name, null)
-  )
+  value = aws_dynamodb_table.devsecops_table.name
 }
 
 output "vpc_id" {
