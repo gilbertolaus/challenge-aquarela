@@ -166,7 +166,7 @@ jobs:
 
       - name: Testar CoreDNS
         run: |  
-                  kubectl run dns-test --image=alpine --restart=Never -- sh -c "apk add --no-cache bind-tools && nslookup example.com; exit 0" && \
+                  kubectl run dns-test --image=alpine --restart=Never -- sh -c "apk add --no-cache bind-tools && nslookup example.com; exit 0" && | sleep 60 \
                   kubectl logs dns-test && \
                   kubectl delete pod dns-test
 
