@@ -32,7 +32,12 @@ jobs:
 
       - name: Change working directory
         run: cd /home/ && pwd
-        
+
+      - name: Clone REPO
+        run: | 
+          git clone ${{ vars.ARGOCD_REPO_URL }} 
+          cd challenge-aquarela 
+
       - name: Set up Docker
         run: |
           sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor --yes --batch -q -o /usr/share/keyrings/docker-archive-keyring.gpg
