@@ -18,8 +18,10 @@ env:
 jobs:
   deploy:
     runs-on: self-hosted
-    environment: production  # Ambiente onde as vars estão configuradas
-    
+    env:
+      ARGOCD_CLI_VERSION: "v2.7.7"
+      ARGOCD_NAMESPACE: "argocd"
+      BITWARDEN_NAMESPACE: "bitwarden"
     steps:
       - name: Repository Checkout
         uses: actions/checkout@v3
@@ -123,6 +125,7 @@ jobs:
 
           echo "Synchronizing application 'bitwarden'"
           argocd app sync bitwarden
+          
         env:
           ARGOCD_CLI_VERSION: ${{ env.ARGOCD_CLI_VERSION }}
           ARGOCD_NAMESPACE: ${{ env.ARGOCD_NAMESPACE }}
