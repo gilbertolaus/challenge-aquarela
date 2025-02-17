@@ -2,6 +2,38 @@
 
 Este repositório contém o código e a configuração para o projeto Challenge Aquarela, que utiliza várias tecnologias para implementar uma infraestrutura em nuvem e serviços.
 
+## Como utilizar
+
+### Acessar o Workflow do GITHUB Actions
+Acessar o endereço https://github.com/gilbertolaus/challenge-aquarela/actions/workflows/deploy.yaml
+
+### Executar o Workflow
+Clicar no botão Run workflow.
+
+### Explicação do deploy.yaml
+
+1. **Definição do Workflow**: O workflow é chamado de "Deploy Pipeline" e é acionado manualmente (`workflow_dispatch`), permitindo que o usuário escolha o ambiente de deploy (por exemplo, `development`).
+
+2. **Jobs**: O job principal é chamado `deploy`, que será executado em um ambiente `ubuntu-latest`.
+
+3. **Variáveis de Ambiente**: Define variáveis de ambiente necessárias para o job, como a versão do ArgoCD CLI e os namespaces do ArgoCD e Bitwarden.
+
+4. **Etapas (Steps)**:
+   - **Repository Checkout**: Faz o checkout do repositório para acessar o código-fonte.
+   - **Change working directory**: Muda o diretório de trabalho para o repositório clonado.
+   - **Set up Docker**: Instala o Docker no runner, necessário para executar containers.
+   - **Check and Run LocalStack**: Verifica se o LocalStack está em execução e, se não estiver, inicia um novo container do LocalStack.
+   - **Setup Terraform**: Instala o Terraform no runner.
+   - **Configure AWS Credentials**: Define as credenciais da AWS para interagir com o LocalStack.
+   - **Deploy with Terraform**: Inicializa e aplica a configuração do Terraform para provisionar a infraestrutura.
+   - **Deploy Applications**: Recupera a senha inicial do ArgoCD, faz login e sincroniza as aplicações.
+   - **Test Deploy Terraform**: Executa o `terraform init` e `terraform apply` para garantir que a infraestrutura esteja correta.
+   - **Get Info Cluster Kubernetes**: Recupera informações sobre o cluster Kubernetes em execução.
+   - **Test ArgoCD**: Verifica se o ArgoCD está funcionando corretamente.
+   - **Test Bitwarden**: Testa a acessibilidade do serviço Bitwarden.
+   - **Test CoreDNS**: Realiza um teste de DNS para garantir que o CoreDNS está funcionando.
+   - **Test LocalPathProvider**: Testa o LocalPathProvider para verificar se ele está configurado corretamente.
+
 ## Tecnologias e Ferramentas Utilizadas
 
 ### 1. **Terraform**
