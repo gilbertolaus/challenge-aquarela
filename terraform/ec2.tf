@@ -1,4 +1,3 @@
-# Security Group para permitir SSH e HTTP
 resource "aws_security_group" "ec2_sg" {
   name        = "ec2-security-group"
   description = "Permitir SSH e HTTP"
@@ -26,10 +25,8 @@ resource "aws_security_group" "ec2_sg" {
   }
 }
 
-# Instância EC2 de exemplo em uma subnet pública
 resource "aws_instance" "example" {
-  ami           = "ami-0abcdef1234567890"  # AMI fictícia para LocalStack
-  instance_type = "t2.micro"
+  ami           = "ami-0abcdef1234567890"  
   subnet_id     = aws_subnet.public[0].id
   vpc_security_group_ids = [aws_security_group.ec2_sg.id]
 
