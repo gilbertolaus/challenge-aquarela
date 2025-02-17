@@ -71,7 +71,8 @@ jobs:
               --port "8080:8080@loadbalancer" \
               --port "8081:8081@loadbalancer"
           fi
-      - name: Deploy ArgoCD and Apps
+
+      - name: Install ArgoCD
         run: |
           set -e
           echo "Downloading ArgoCD CLI version ${ARGOCD_CLI_VERSION}"
@@ -92,6 +93,18 @@ jobs:
           kubectl apply -f apps/argocd/manifests/service.yaml
           kubectl apply -f apps/argocd/manifests/loadbalancer.yaml
 
+  deploy-apps:
+    needs: deploy
+    runs-on: self-hosted
+    env:
+      ARGOCD_NAMESPACE: "argocd"
+      BITWARDEN_NAMESPACE: "bitwarden"
+    steps:
+      - name: Repository Checkout
+        uses: actions/checkout@v3
+
+      - name: Deploy Applications
+        run: |
           echo "Retrieving initial ArgoCD password"
           ARGOCD_PASSWORD=$(kubectl -n ${ARGOCD_NAMESPACE} get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
           echo "Logging into ArgoCD"
@@ -115,7 +128,3 @@ jobs:
 
           echo "Synchronizing application 'bitwarden'"
           argocd app sync bitwarden
-        env:
-          ARGOCD_CLI_VERSION: ${{ env.ARGOCD_CLI_VERSION }}
-          ARGOCD_NAMESPACE: ${{ env.ARGOCD_NAMESPACE }}
-          BITWARDEN_NAMESPACE: ${{ env.BITWARDEN_NAMESPACE }}
