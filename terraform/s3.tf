@@ -1,4 +1,9 @@
+data "aws_s3_bucket" "existing_bucket" {
+  bucket = "bucket-public-devsecops"
+}
+
 resource "aws_s3_bucket" "public_bucket" {
+  count  = data.aws_s3_bucket.existing_bucket.id == null ? 1 : 0
   bucket = "bucket-public-devsecops"
 }
 
