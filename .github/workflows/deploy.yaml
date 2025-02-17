@@ -24,11 +24,11 @@ jobs:
       ARGOCD_NAMESPACE: "argocd"
       BITWARDEN_NAMESPACE: "bitwarden"
     steps:
-      # - name: Repository Checkout
-      #   uses: actions/checkout@v3
+      name: Repository Checkout
+      uses: actions/checkout@v3
 
-      # - name: Checkout Code
-      #   uses: actions/checkout@v3
+      name: Checkout Code
+      uses: actions/checkout@v3
 
       - name: Change working directory
         run: cd /home/ && pwd
