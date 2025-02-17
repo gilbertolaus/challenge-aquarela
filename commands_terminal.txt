@@ -26,7 +26,44 @@ kubectl port-forward svc/argocd-server -n argocd 8080:443
 
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 --decode
 
-# argocd commands
+# install nginx-ingress-controller
 
-argocd login localhost:8080 --username admin --password 7zyNOHJqLc970kFD --insecure
-argocd add repo https://github.com/gilbertolaus/challenge-aquarela.git
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.2/deploy/static/provider/cloud/deploy.yaml
+
+# execute pod dns-test to testing coredns
+
+kubectl apply -f apps/coredns/manifests/pod.yaml 
+
+# test coredns
+
+kubectl exec -it dns-test -- nslookup kubernetes.default.svc.cluster.local
+
+# remove pod 
+
+kubectl delete pod dns-test -n default
+
+# create pvc 
+
+kubectl apply -f apps/local-path-provider/manifests/pvc.yaml
+
+# create pod to testing
+
+kubectl apply -f apps/local-path-provider/manifests/pod.yaml
+
+# test pvc
+
+kubectl exec -it test-pod -- sh -c "echo 'Test data' > /data/test.txt && cat /data/test.txt"
+
+# delete pod 
+
+kubectl delete pod test-pod -n default
+
+# delete pvc 
+
+kubectl delete pvc test-pvc
+
+# testing bitwarden
+
+kubectl port-forward svc/bitwarden-service 8080:80 -n bitwarden
+
+ubuntu-latest

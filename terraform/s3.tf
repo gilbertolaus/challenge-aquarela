@@ -31,10 +31,3 @@ resource "aws_s3_bucket_policy" "public_access" {
   })
 }
 
-terraform {
-  backend "s3" {
-    bucket         = "bucket-public-devsecops" 
-    key            = "terraform/state"          
-    region         = "sa-east-1"                
-  }
-}
