@@ -145,7 +145,7 @@ jobs:
     steps:
       - name: Testar Deploy dos Serviços do Terraform
         run: |
-          
+          cd terraform
           terraform apply -auto-approve
 
       - name: Obter Informações do Cluster Kubernetes
